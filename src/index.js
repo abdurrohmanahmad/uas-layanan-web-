@@ -1,139 +1,129 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-const cors = require('cors')
-const {db} = require('./model/dbConection')
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const { db } = require("./model/dbConection");
 
-const app = express()
+const app = express();
 
-app.use(cors())
-app.use(express.json())
-app.use(bodyParser.urlencoded({extended:true}))
+app.use(cors());
+app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const port = 3001;
 
-//REad data
-app.get('/api/readDataUMKM', (req, res) => {
-    const sqlQuery = "SELECT * FROM profil";
+app.post("/api/siswa", (req, res) => {
+  const namaSiswa = req.body.nama;
+  const asalSiswa = req.body.asal;
+  const nimSiswa = req.body.nim;
 
-    db.query(sqlQuery, (err, result) => {
-        if(err){
-            console.log("error")
-        }else{
-            res.send(result);
-            console.log("result")
-        }
-    })
+  const sqlQuery = "INSERT INTO siswa (nama, asal, nim) VALUE (?, ?, ?)";
+
+  db.query(sqlQuery, [namaSiswa, asalSiswa, nimSiswa], (err, result) => {
+    if (err) {
+      console.log("error");
+      console.log(err);
+    } else {
+      res.send(result);
+      console.log("result");
+    }
   });
+});
 
-//REad Data Id
+app.get("/api/siswa", (req, res) => {
+  const sqlQuery = "SELECT * FROM siswa";
 
-app.get('/api/readDataUMKM/:id', (req, res) => {
-    const userId = req.params.id;
-    
-    const sqlQuery = "SELECT * FROM profil WHERE id = ?";
-    db.query(sqlQuery, userId, (err, result) => {
-        if(err){
-            console.log("err")
-        }else{
-            res.send(result)
-            console.log("result")
-        }
-    })
-})
-
-//CReate Data UMKM
-app.post('/api/createDataUMKM', (req, res) => {
-    const namaUMKM = req.body.nama_umkm;
-    const namaOwner = req.body.nama_owner;
-    const profilURL = req.body.profil_url;
-    const gambarOwner = req.body.gambar_owner;
-    const detailUMKM= req.body.detail_umkm;
-    const alamatPerusahaan = req.body.alamat_perusahaan;
-    const mottoUMKM = req.body.motto_umkm;
-    const pass = req.body.password;
-  
-    const sqlQuery = "INSERT INTO profil (nama_umkm, nama_owner, profil_url, gambar_owner, detail_umkm, alamat_perusahaan, motto_umkm, password) VALUE (?, ?, ?, ?, ?, ?, ?, ?)";
-
-    db.query(sqlQuery, [namaUMKM, namaOwner, profilURL, gambarOwner,detailUMKM, alamatPerusahaan, mottoUMKM, pass], (err, result) => {
-        if(err){
-            console.log("error")
-            console.log(err)
-        }else{
-            res.send(result);
-            console.log("result")
-            
-        }
-    })
+  db.query(sqlQuery, (err, result) => {
+    if (err) {
+      console.log("error");
+    } else {
+      res.send(result);
+      console.log("result");
+    }
   });
+});
 
+app.put("/api/updateSiswa/:nim", (req, res) => {
+  const nimSiswa = req.params.nim;
+  const namaSiswa = req.body.nama;
+  const asalSiswa = req.body.asal;
 
-//EDit or UPdate
-
-app.put('/api/updateDataUMKM', (req, res) => {
-    const namaUMKM = req.body.nama_umkm;
-    const namaOwner = req.body.nama_owner;
-    const profilURL = req.body.profil_url;
-    const gambarOwner = req.body.gambar_owner;
-    const detailUMKM= req.body.detail_umkm;
-    const alamatPerusahaan = req.body.alamat_perusahaan;
-    const mottoUMKM = req.body.motto_umkm;
-    const pass = req.body.password;
-  
-    const sqlQuery = "UPDATE profil SET nama_umkm = ?, nama_owner = ?, profil_url = ?, gambar_owner = ?, detail_umkm = ?, alamat_perusahaan = ?, motto_umkm = ?, password = ? WHERE nama_umkm = ?";
-
-    db.query(sqlQuery, [namaUMKM, namaOwner, profilURL, gambarOwner,detailUMKM, alamatPerusahaan, mottoUMKM, pass], (err, result) => {
-        if(err){
-            console.log("error")
-            console.log(err)
-        }else{
-            res.send(result);
-            console.log("result")
-            
-        }
-    })
+  const sqlQuery = "UPDATE siswa SET nama = ?, asal = ?  WHERE nim = ?";
+  db.query(sqlQuery, [namaSiswa, asalSiswa, nimSiswa], (err, result) => {
+    if (err) {
+      console.log("error");
+    } else {
+      res.send(result);
+      console.log(result);
+    }
   });
+});
 
-// app.put('/api/updateDataUMKM', (req, res) => {
-//     const namaUMKM = req.body.nama_umkm;
-//     const namaOwner = req.body.nama_owner;
-//     const profilURL = req.body.profil_url;
-//     const gambarOwner = req.body.gambar_owner;
-//     const detailUMKM= req.body.detail_umkm;
-//     const alamatPerusahaan = req.body.alamat_perusahaan;
-//     const mottoUMKM = req.body.motto_umkm;
-//     const pass = req.body.password;
-   
-  
-//     const sqlQuery = "UPDATE profil SET nama_umkm = ?, nama_owner = ?, profil_url = ?, gambar_owner = ?, detail_umkm = ?, alamat_perusahaan = ?, motto_umkm = ?, password = ? WHERE nama_umkm = ? "
+app.delete("/api/deleteSiswa/:nim", (req, res) => {
+  const nimSiswa = req.params.nim;
 
-//     db.query(sqlQuery, [namaUMKM, namaOwner, profilURL, gambarOwner, detailUMKM, alamatPerusahaan, mottoUMKM, pass], (err, result) => {
-//         if(err){
-//             console.log(err)
-//             console.log("error")
-//         }else{
-//             res.send(result);
-//             console.log("result")
-            
-//         }
-//     })
-//   });
+  const sqlQuery = "DELETE FROM siswa WHERE nim = ?";
+  db.query(sqlQuery, [nimSiswa], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.status(500).send("Gagal menghapus siswa.");
+    } else if (result.affectedRows === 0) {
+      // Jika tidak ada baris yang terhapus, kirim respons bahwa siswa tidak tersedia
+      res.status(404).send("Siswa tidak tersedia.");
+    } else {
+      console.log(result);
+      res.send("Siswa berhasil dihapus.");
+    }
+  });
+});
 
+app.patch("/api/editSiswa/:nim", (req, res) => {
+  // Mengambil NIM siswa dari parameter URL
+  const nimSiswa = req.params.nim;
+  // Mengambil data nama dan asal siswa dari body request
+  const namaSiswa = req.body.nama;
+  const asalSiswa = req.body.asal;
 
-//DElete
-app.delete('/api/deleteDataUMKM', (req, res) => {
-    const userId = req.body.id;
-  
-    const sqlQuery = "DELETE FROM profil WHERE id = ?";
-    db.query(sqlQuery, userId, (err, result) => {
-      if(err){
-        console.log("error");
-      }else{
-        res.send(result);
-        console.log("result");
-      }
-    });
+  // Query SQL untuk memperbarui data siswa berdasarkan NIM
+  const sqlQuery = "UPDATE siswa SET nama = ?, asal = ? WHERE nim = ?";
+  db.query(sqlQuery, [namaSiswa, asalSiswa, nimSiswa], (err, result) => {
+    if (err) {
+      // Jika terjadi kesalahan saat query ke database, kirim respons dengan status 500 dan pesan kesalahan
+      console.error("Error updating siswa:", err);
+      res
+        .status(500)
+        .send({ error: "Terjadi kesalahan saat memperbarui informasi siswa." });
+    } else if (result.affectedRows === 0) {
+      // Jika tidak ada baris yang diperbarui, kirim respons dengan status 404 dan pesan bahwa siswa tidak ditemukan
+      res.status(404).send({ error: "Siswa tidak ditemukan." });
+    } else {
+      // Jika berhasil, kirim respons dengan pesan sukses dan hasil query
+      res.send({ message: "Informasi siswa berhasil diperbarui.", result });
+      console.log("Siswa diperbarui:", result);
+    }
   });
+});
 
-  app.listen(port, () => {
-    console.log("Server berjalan di port " + port)
-})
+app.head("/api/headSiswa/:nim", (req, res) => {
+  // Mengambil NIM siswa dari parameter URL
+  const nimSiswa = req.params.nim;
+
+  // Query SQL untuk memeriksa apakah data siswa dengan NIM tertentu ada
+  const sqlQuery = "SELECT 1 FROM siswa WHERE nim = ?";
+  db.query(sqlQuery, [nimSiswa], (err, result) => {
+    if (err) {
+      // Jika terjadi kesalahan saat query ke database, kirim respons dengan status 500
+      console.error("Error checking siswa:", err);
+      res.status(500).send();
+    } else if (result.length === 0) {
+      // Jika siswa tidak ditemukan, kirim respons dengan status 404
+      res.status(404).send();
+    } else {
+      // Jika siswa ditemukan, kirim respons dengan status 200 tanpa isi
+      res.status(200).send();
+    }
+  });
+});
+
+app.listen(port, () => {
+  console.log("Server berjalan di port " + port);
+});

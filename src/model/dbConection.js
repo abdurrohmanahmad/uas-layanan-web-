@@ -1,10 +1,10 @@
-const mysql = require('mysql')
+const mysql = require("mysql");
 
 const db = mysql.createConnection({
-    host :'localhost',
-    user :'root',
-    password:'',
-    database:'api-kp'
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "rahman",
 });
 
-exports.db = db
+exports.db = db;
